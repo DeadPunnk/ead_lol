@@ -5,9 +5,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import matplotlib.pyplot as plt
-import seaborn as sns
-import altair as alt
+#import matplotlib.pyplot as plt
+#import seaborn as sns
+#import altair as alt
 
 
 st.set_page_config(page_title="LoL Analytics", page_icon="🎮", initial_sidebar_state="expanded")
