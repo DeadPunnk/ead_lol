@@ -16,15 +16,15 @@ st.set_page_config(page_title="LoL Analytics", page_icon="🎮", initial_sidebar
 
 #@st.cache
 def load_and_prep_players():
-    dfplayers = pd.read_csv('playerst.csv')
+    dfplayers = pd.read_csv('pages/playersst_20.csv')
     #dfplayers['KDA'] = str(round(((dfplayers['kills'] + dfplayers['assists'])/dfplayers['deaths']), 2))
-    dfplayers = dfplayers.set_index(dfplayers['date'])
+    #dfplayers = dfplayers.set_index(dfplayers['date'])
 
     
     return dfplayers
 
 def load_and_prep_teams():
-    dfteams = pd.read_csv('teamsst.csv')
+    dfteams = pd.read_csv('pages/teamsst.csv')
     #dfplayers['KDA'] = str(round(((dfplayers['kills'] + dfplayers['assists'])/dfplayers['deaths']), 2))
     #dfteams = dfteams.set_index(dfplayers['date'])
     return dfteams
@@ -66,11 +66,11 @@ with tab_player:
                    .set_table_styles(dfstyle))
                    #.applymap(color_surplusvalue, subset=pd.IndexSlice[:, ['playername']]))	
     st.write(f'''
-         ##### <div style="text-align: center">Campeonato CBLOL 2018<span style="color:blue">
+         ##### <div style="text-align: center">Campeonato CBLOL 2020<span style="color:blue">
          ''', unsafe_allow_html=True)
 
 
-    st.table(styler_player)
+    
     g1 = st.container()
     player_selected = dfplayers[dfplayers.playername == player][cols]
     chart_data = pd.DataFrame(player_selected, columns=['kills', 'assists', 'deaths'])
@@ -79,6 +79,8 @@ with tab_player:
     st.line_chart(line_chart)
     bar_chart = pd.DataFrame(player_selected, columns=['total cs'])
     st.bar_chart(bar_chart)
+
+    st.table(styler_player)
 
     #color_map = ['orange','pink']
     #plt.stackplot(player_selected.kills, player_selected.deaths, labels=['Kills', 'Deaths'])
