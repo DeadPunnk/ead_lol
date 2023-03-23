@@ -15,27 +15,27 @@ from pandas.api.types import (
     is_object_dtype,
 )
 
-st.set_page_config(page_title="LoL Analytics", page_icon="🎮", initial_sidebar_state="expanded")
+st.set_page_config(page_title="LoL Analytics", page_icon="🎮", initial_sidebar_state="expanded", layout='wide')
 
-
+st.title("E-sports Analytics Dashboard")
 
 #@st.cache
 def load_and_prep_players():
     dfplayers = pd.read_csv('all_players.csv')
     #dfplayers['KDA'] = str(round(((dfplayers['kills'] + dfplayers['assists'])/dfplayers['deaths']), 2))
-    dfplayers = dfplayers.set_index(dfplayers['date'])
+    #dfplayers = dfplayers.set_index(dfplayers['date'])
 
     
     return dfplayers
 
-#def load_and_prep_teams():
-#    dfteams = pd.read_csv('teamsst.csv')
-#    #dfplayers['KDA'] = str(round(((dfplayers['kills'] + dfplayers['assists'])/dfplayers['deaths']), 2))
-#    #dfteams = dfteams.set_index(dfplayers['date'])
-#    return dfteams
+def load_and_prep_teams():
+    dfteams = pd.read_csv('teamdatast.csv')
+    #dfplayers['KDA'] = str(round(((dfplayers['kills'] + dfplayers['assists'])/dfplayers['deaths']), 2))
+    #dfteams = dfteams.set_index(dfplayers['date'])
+    return dfteams
 
 dfplayers = load_and_prep_players()
-#dfteams = load_and_prep_teams() 
+dfteams = load_and_prep_teams() 
 
 def color_surplusvalue(val):
     if str(val) == '0':
@@ -64,7 +64,9 @@ dfstyle = [{"selector": "th", "props": heading_properties},
 cols = ['teamname', 'position', 'kills', 'deaths', 'assists', 'KDA', 'totalgold', 'total cs']
 
 
-coluna1, coluna2 = st.columns([10, 10])
+tab1, tab2, tab3 = st.tabs(['Player', 'Team', 'Player VS Player'])
+
+
 
 
 def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -136,66 +138,56 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 
 
-with coluna1:
-    #player = st.selectbox("Escolha um player:", dfplayers['playername'])
-    #date = st.selectbox("Escolha uma data:", dfplayers['date'])
+with tab1:
 
-    #styler_player = (dfplayers[dfplayers.playername == player][cols]
-    #               .style.set_properties(**{'background': 'azure', 'border': '0.5px solid'})
-    #               .hide(axis='index')
-    #               .set_table_styles(dfstyle))
-                   #.applymap(color_surplusvalue, subset=pd.IndexSlice[:, ['playername']]))	
+    g1, g2, g3 = st.columns((1,1,1))
+
     st.write(f'''
          ##### <div style="text-align: center">Campeonato CBLOL 2018 a 2022<span style="color:blue">
          ''', unsafe_allow_html=True)
 
 
+
+
     player_selected = filter_dataframe(dfplayers)
     st.dataframe(player_selected)
     
-    
-    #color_map = ['orange','pink']
-    #plt.stackplot(player_selected.kills, player_selected.deaths, labels=['Kills', 'Deaths'])
-    #sns.stackplot(data=player_selected,x="kills", hue="deaths",kind="kde", height=6,multiple="fill", clip=(0, None),palette="ch:rot=-.25,hue=1,light=.75",)
-    #fig = px.area(p, x = 'kills', y='deaths', template = 'seaborn', color='blue', line_group='kills')
-    #g1.plotly_chart(fig, use_container_width=True)
-    #st.bar_chart(x=dfplayers['deaths'], y=dfplayers['kills'])
-    #st.area_chart(dfstyle)
 
-with coluna2:
-    #player = st.selectbox("Escolha um player:", dfplayers['playername'])
-    #date = st.selectbox("Escolha uma data:", dfplayers['date'])
-
-    #styler_player = (dfplayers[dfplayers.playername == player][cols]
-    #               .style.set_properties(**{'background': 'azure', 'border': '0.5px solid'})
-    #               .hide(axis='index')
-    #               .set_table_styles(dfstyle))
-                   #.applymap(color_surplusvalue, subset=pd.IndexSlice[:, ['playername']])) 
-
-
-    g1 = st.container()
-    #player_selected = dfplayers[dfplayers.playername == player][cols]
     chart_data = pd.DataFrame(player_selected, columns=['kills', 'assists', 'deaths'])
-    st.area_chart(chart_data)
+
+    g1.write(f'''
+         ##### <div style="text-align: center">Kills, Assists, mortes por partida<span style="color:blue">
+         ''', unsafe_allow_html=True)
+    g1.area_chart(chart_data)
+
+
+    g2.write(f'''
+         ##### <div style="text-align: center">Total de ouro por partida<span style="color:blue">
+         ''', unsafe_allow_html=True)
     line_chart = pd.DataFrame(player_selected, columns=['totalgold'])
-    st.line_chart(line_chart)
+
+    g2.line_chart(line_chart)
+
     bar_chart = pd.DataFrame(player_selected, columns=['total cs'])
-    st.bar_chart(bar_chart)
 
-
-    #color_map = ['orange','pink']
-    #plt.stackplot(player_selected.kills, player_selected.deaths, labels=['Kills', 'Deaths'])
-    #sns.stackplot(data=player_selected,x="kills", hue="deaths",kind="kde", height=6,multiple="fill", clip=(0, None),palette="ch:rot=-.25,hue=1,light=.75",)
-    #fig = px.area(p, x = 'kills', y='deaths', template = 'seaborn', color='blue', line_group='kills')
-    #g1.plotly_chart(fig, use_container_width=True)
-    #st.bar_chart(x=dfplayers['deaths'], y=dfplayers['kills'])
-    #st.area_chart(dfstyle)
+    g3.write(f'''
+         ##### <div style="text-align: center">Total de farme por partida<span style="color:blue">
+         ''', unsafe_allow_html=True)
+    g3.bar_chart(bar_chart)
 
 
 
 cols2 = ['teamname', 'split', 'result', 'teamkills', 'teamdeaths', 'totalgold', 'towers', 'dragons', 'barons']
 
-#with tab_team:
+with tab2:
+
+    bar_chart_team = pd.DataFrame(dfteams, columns=['result', 'teamname'])
+    st.write(f'''
+         ##### <div style="text-align: center">Total de vitorias por time<span style="color:blue">
+         ''', unsafe_allow_html=True)
+    st.bar_chart(bar_chart_team, x = 'teamname', y = 'result')
+
+    st.dataframe(dfteams)
 #	fig = px.scatter(
 #	dfteams,
 #	x="totalgold",
@@ -206,10 +198,36 @@ cols2 = ['teamname', 'split', 'result', 'teamkills', 'teamdeaths', 'totalgold', 
 #	size_max=60,
 #	)
 #	st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-#
-##	#styler_team = (dfteams[dfteams.teamname == team][cols2]
- #   #	.style.set_properties(**{'background': 'azure', 'border': '1.2px solid'})
- #   #	.hide(axis='index')
- #   #	.set_table_styles(dfstyle))
- #   	#.applymap(color_surplusvalue, subset=pd.IndexSlice[:, ['playername']]))	
-#	#st.table(styler_team)
+
+
+    #styler_team = (dfteams[dfteams.teamname == team][cols2]
+   #	.style.set_properties(**{'background': 'azure', 'border': '1.2px solid'})
+   #	.hide(axis='index')
+   #	.set_table_styles(dfstyle))
+   	#.applymap(color_surplusvalue, subset=pd.IndexSlice[:, ['playername']]))	
+	#st.table(styler_team)
+
+
+with tab3:
+
+    pcol1, pcol2 = st.columns((1,1))
+
+    df_1 = dfplayers['playername']
+    player1 = pcol1.selectbox("Escolha um player:", df_1, key = 1)
+    
+    styler_player1 = (dfplayers[dfplayers.playername == player1][cols]
+                   .style.set_properties(**{'background': 'azure', 'border': '0.5px solid'})
+                   .hide(axis='index')
+                   .set_table_styles(dfstyle))
+
+    pcol1.dataframe(styler_player1)
+
+    df_2 = dfplayers['playername']
+    player2 = pcol2.selectbox("Escolha um player:", df_2, key = 2)
+    
+    styler_player2 = (dfplayers[dfplayers.playername == player2][cols]
+                   .style.set_properties(**{'background': 'azure', 'border': '0.5px solid'})
+                   .hide(axis='index')
+                   .set_table_styles(dfstyle))
+
+    pcol2.dataframe(styler_player2)
