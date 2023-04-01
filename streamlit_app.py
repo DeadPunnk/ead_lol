@@ -5,6 +5,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import plotly.graph_objects as go
 #import matplotlib.pyplot as plt
 #import seaborn as sns
 #import altair as alt
@@ -181,11 +182,35 @@ cols2 = ['teamname', 'split', 'result', 'teamkills', 'teamdeaths', 'totalgold', 
 
 with tab2:
 
-    bar_chart_team = pd.DataFrame(dfteams, columns=['result', 'teamname'])
-    st.write(f'''
+    c1, c2 = st.columns((1,1))
+
+    #pie = dfteams.query('teamname in ["INTZ", "KaBuM! e-Sports", "Flamengo Esports", "paiN Gaming", "RED Canids"]')
+
+    #pie_chart_team = pd.DataFrame(data = [[816, 750, 702, 618, 576]], columns = ['KaBuM! e-Sports', 'Flamengo Esports', 'paiN Gaming', 'INTZ', 'RED Canids'], index = ['Vitorias']).transpose()
+    #pd.DataFrame(data = [[816, 750, 702, 618, 576]], columns = ['KaBuM! e-Sports', 'Flamengo Esports', 'paiN Gaming', 'INTZ', 'RED Canids'])
+
+    bar_chart = dfteams[['teamname', 'result']].query('teamname in ["INTZ", "KaBuM! e-Sports", "Flamengo Esports", "paiN Gaming", "RED Canids"]')
+
+    c1.write(f'''
          ##### <div style="text-align: center">Total de vitorias por time<span style="color:blue">
          ''', unsafe_allow_html=True)
-    st.bar_chart(bar_chart_team, x = 'teamname', y = 'result')
+    #st.bar_chart(bar_chart_team, x = 'teamname', y = 'result')
+
+    fig_bar = px.bar(bar_chart, x = 'teamname', y = 'result', color = 'teamname')
+
+    #fig_1.update_traces(textposition = 'inside', textinfo = 'percent+label')
+
+    c1.plotly_chart(fig_bar, use_container_width = True)
+
+    c2.write(f'''
+         ##### <div style="text-align: center">Times que venceram de acordo com kills e gold<span style="color:blue">
+         ''', unsafe_allow_html=True)
+
+    line_chart = dfteams[['teamname', 'teamkills', 'totalgold', 'result']].query('teamname in ["INTZ", "KaBuM! e-Sports", "Flamengo Esports", "paiN Gaming", "RED Canids"]')
+
+    fig_line = px.scatter(line_chart, x = 'totalgold', y = 'teamkills', color = 'result', hover_data = ['teamname'])
+
+    c2.plotly_chart(fig_line, use_container_width = True)
 
     st.dataframe(dfteams)
 #	fig = px.scatter(
@@ -231,3 +256,56 @@ with tab3:
                    .set_table_styles(dfstyle))
 
     pcol2.dataframe(styler_player2)
+
+    player_selected1 = dfplayers[dfplayers.playername == player1][cols]
+
+    chart_data = pd.DataFrame(player_selected1, columns=['kills', 'assists', 'deaths'])
+
+    pcol1.write(f'''
+         ##### <div style="text-align: center">Kills, Assists, mortes por partida<span style="color:blue">
+         ''', unsafe_allow_html=True)
+    pcol1.area_chart(chart_data)
+
+
+    pcol1.write(f'''
+         ##### <div style="text-align: center">Total de ouro por partida<span style="color:blue">
+         ''', unsafe_allow_html=True)
+    line_chart = pd.DataFrame(player_selected1, columns=['totalgold'])
+
+    pcol1.line_chart(line_chart)
+
+    bar_chart = pd.DataFrame(player_selected1, columns=['total cs'])
+
+    pcol1.write(f'''
+         ##### <div style="text-align: center">Total de farme por partida<span style="color:blue">
+         ''', unsafe_allow_html=True)
+    pcol1.bar_chart(bar_chart)
+
+
+    ####### player 2 #############
+
+
+    player_selected2 = dfplayers[dfplayers.playername == player2][cols]
+
+    chart_data = pd.DataFrame(player_selected2, columns=['kills', 'assists', 'deaths'])
+
+    pcol2.write(f'''
+         ##### <div style="text-align: center">Kills, Assists, mortes por partida<span style="color:blue">
+         ''', unsafe_allow_html=True)
+    pcol2.area_chart(chart_data)
+
+
+    pcol2.write(f'''
+         ##### <div style="text-align: center">Total de ouro por partida<span style="color:blue">
+         ''', unsafe_allow_html=True)
+    line_chart = pd.DataFrame(player_selected2, columns=['totalgold'])
+
+    pcol2.line_chart(line_chart)
+
+    bar_chart = pd.DataFrame(player_selected2, columns=['total cs'])
+
+    pcol2.write(f'''
+         ##### <div style="text-align: center">Total de farme por partida<span style="color:blue">
+         ''', unsafe_allow_html=True)
+    pcol2.bar_chart(bar_chart)
+
