@@ -37,6 +37,13 @@ def load_and_prep_teams():
 
 dfplayers = load_and_prep_players()
 dfteams = load_and_prep_teams() 
+dfplayers22 = pd.read_csv('playersst_22.csv')
+
+
+def convert_df(df):
+
+   return df.to_csv(index=False).encode('utf-8')
+
 
 def color_surplusvalue(val):
     if str(val) == '0':
@@ -62,10 +69,10 @@ dfstyle = [{"selector": "th", "props": heading_properties},
 #tab_player, tab_team = st.tabs(["Player", "Time"])
 
 
-cols = ['teamname', 'position', 'kills', 'deaths', 'assists', 'KDA', 'totalgold', 'total cs']
+cols = ['date','teamname', 'position', 'kills', 'deaths', 'assists', 'KDA', 'totalgold', 'total cs']
 
 
-tab1, tab2, tab3 = st.tabs(['Player', 'Team', 'Player VS Player'])
+tab1, tab2, tab3 = st.tabs(['Team', 'Player VS Player', 'Detalhe'])
 
 
 
@@ -139,55 +146,12 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 
 
+
+#cols2 = ['teamname', 'split', 'result', 'teamkills', 'teamdeaths', 'totalgold', 'towers', 'dragons', 'barons']
+
 with tab1:
 
-    g1, g2, g3 = st.columns((1,1,1))
-
-    st.write(f'''
-         ##### <div style="text-align: center">Campeonato CBLOL 2018 a 2022<span style="color:blue">
-         ''', unsafe_allow_html=True)
-
-
-
-
-    player_selected = filter_dataframe(dfplayers)
-    st.dataframe(player_selected)
-    
-
-    chart_data = pd.DataFrame(player_selected, columns=['kills', 'assists', 'deaths'])
-
-    g1.write(f'''
-         ##### <div style="text-align: center">Kills, Assists, mortes por partida<span style="color:blue">
-         ''', unsafe_allow_html=True)
-    g1.area_chart(chart_data)
-
-
-    g2.write(f'''
-         ##### <div style="text-align: center">Total de ouro por partida<span style="color:blue">
-         ''', unsafe_allow_html=True)
-    line_chart = pd.DataFrame(player_selected, columns=['totalgold'])
-
-    g2.line_chart(line_chart)
-
-    bar_chart = pd.DataFrame(player_selected, columns=['total cs'])
-
-    g3.write(f'''
-         ##### <div style="text-align: center">Total de farme por partida<span style="color:blue">
-         ''', unsafe_allow_html=True)
-    g3.bar_chart(bar_chart)
-
-
-
-cols2 = ['teamname', 'split', 'result', 'teamkills', 'teamdeaths', 'totalgold', 'towers', 'dragons', 'barons']
-
-with tab2:
-
     c1, c2 = st.columns((1,1))
-
-    #pie = dfteams.query('teamname in ["INTZ", "KaBuM! e-Sports", "Flamengo Esports", "paiN Gaming", "RED Canids"]')
-
-    #pie_chart_team = pd.DataFrame(data = [[816, 750, 702, 618, 576]], columns = ['KaBuM! e-Sports', 'Flamengo Esports', 'paiN Gaming', 'INTZ', 'RED Canids'], index = ['Vitorias']).transpose()
-    #pd.DataFrame(data = [[816, 750, 702, 618, 576]], columns = ['KaBuM! e-Sports', 'Flamengo Esports', 'paiN Gaming', 'INTZ', 'RED Canids'])
 
     bar_chart = dfteams[['teamname', 'result']].query('teamname in ["INTZ", "KaBuM! e-Sports", "Flamengo Esports", "paiN Gaming", "RED Canids"]')
 
@@ -233,38 +197,44 @@ with tab2:
 	#st.table(styler_team)
 
 
-with tab3:
+with tab2:
+
+    st.write(f'''
+         ##### <div style="text-align: center">CBLOL 2022<span style="color:blue">
+         ''', unsafe_allow_html=True)
 
     pcol1, pcol2 = st.columns((1,1))
 
-    df_1 = dfplayers['playername']
+
+    df_1 = dfplayers22['playername']
     player1 = pcol1.selectbox("Escolha um player:", df_1, key = 1)
     
-    styler_player1 = (dfplayers[dfplayers.playername == player1][cols]
+    styler_player1 = (dfplayers22[dfplayers22.playername == player1][cols]
                    .style.set_properties(**{'background': 'azure', 'border': '0.5px solid'})
                    .hide(axis='index')
                    .set_table_styles(dfstyle))
 
     pcol1.dataframe(styler_player1)
 
-    df_2 = dfplayers['playername']
+    df_2 = dfplayers22['playername']
     player2 = pcol2.selectbox("Escolha um player:", df_2, key = 2)
     
-    styler_player2 = (dfplayers[dfplayers.playername == player2][cols]
+    styler_player2 = (dfplayers22[dfplayers22.playername == player2][cols]
                    .style.set_properties(**{'background': 'azure', 'border': '0.5px solid'})
                    .hide(axis='index')
                    .set_table_styles(dfstyle))
 
     pcol2.dataframe(styler_player2)
 
-    player_selected1 = dfplayers[dfplayers.playername == player1][cols]
+    player_selected1 = dfplayers22[dfplayers22.playername == player1][cols]
 
     chart_data = pd.DataFrame(player_selected1, columns=['kills', 'assists', 'deaths'])
+
 
     pcol1.write(f'''
          ##### <div style="text-align: center">Kills, Assists, mortes por partida<span style="color:blue">
          ''', unsafe_allow_html=True)
-    pcol1.area_chart(chart_data)
+    pcol1.bar_chart(chart_data)
 
 
     pcol1.write(f'''
@@ -285,14 +255,14 @@ with tab3:
     ####### player 2 #############
 
 
-    player_selected2 = dfplayers[dfplayers.playername == player2][cols]
+    player_selected2 = dfplayers22[dfplayers22.playername == player2][cols]
 
     chart_data = pd.DataFrame(player_selected2, columns=['kills', 'assists', 'deaths'])
 
     pcol2.write(f'''
          ##### <div style="text-align: center">Kills, Assists, mortes por partida<span style="color:blue">
          ''', unsafe_allow_html=True)
-    pcol2.area_chart(chart_data)
+    pcol2.bar_chart(chart_data)
 
 
     pcol2.write(f'''
@@ -308,4 +278,21 @@ with tab3:
          ##### <div style="text-align: center">Total de farme por partida<span style="color:blue">
          ''', unsafe_allow_html=True)
     pcol2.bar_chart(bar_chart)
+
+
+
+
+with tab3:
+
+    st.write(f'''
+         ##### <div style="text-align: center">Campeonato CBLOL 2018 a 2022<span style="color:blue">
+         ''', unsafe_allow_html=True)
+
+    player_selected = filter_dataframe(dfplayers)
+    st.dataframe(player_selected)
+
+    csv = convert_df(player_selected)
+
+
+    st.download_button("Press to Download", csv, "cblol_detalhe.csv", "text/csv", key='download-csv')
 
