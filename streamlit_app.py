@@ -19,6 +19,7 @@ from pandas.api.types import (
 st.set_page_config(page_title="LoL Analytics", page_icon="🎮", initial_sidebar_state="expanded", layout='wide')
 
 st.title("E-sports Analytics Dashboard")
+#st.subheader('email: joaopedroqnd@gmail.com, telegran: @Jotinha07, linkedin: https://www.linkedin.com/in/joaopedroborges98/')
 
 #@st.cache
 def load_and_prep_players():
@@ -30,7 +31,7 @@ def load_and_prep_players():
     return dfplayers
 
 def load_and_prep_teams():
-    dfteams = pd.read_csv('teamdatast.csv')
+    dfteams = pd.read_csv('teams_cblol22.csv')
     #dfplayers['KDA'] = str(round(((dfplayers['kills'] + dfplayers['assists'])/dfplayers['deaths']), 2))
     #dfteams = dfteams.set_index(dfplayers['date'])
     return dfteams
@@ -153,28 +154,50 @@ with tab1:
 
     c1, c2 = st.columns((1,1))
 
-    bar_chart = dfteams[['teamname', 'result']].query('teamname in ["INTZ", "KaBuM! e-Sports", "Flamengo Esports", "paiN Gaming", "RED Canids"]')
+    bar_chart_team = dfteams[['teamname', 'result']]
+    #.query('teamname in ["INTZ", "KaBuM! e-Sports", "Flamengo Esports", "paiN Gaming", "RED Canids"]')
 
     c1.write(f'''
-         ##### <div style="text-align: center">Total de vitorias por time<span style="color:blue">
+         ##### <div style="text-align: center">Total de vitórias por time<span style="color:blue">
          ''', unsafe_allow_html=True)
     #st.bar_chart(bar_chart_team, x = 'teamname', y = 'result')
 
-    fig_bar = px.bar(bar_chart, x = 'teamname', y = 'result', color = 'teamname')
+    fig_bar_team = px.bar(bar_chart_team, x = 'teamname', y = 'result', color = 'teamname')
 
     #fig_1.update_traces(textposition = 'inside', textinfo = 'percent+label')
 
-    c1.plotly_chart(fig_bar, use_container_width = True)
+    c1.plotly_chart(fig_bar_team, use_container_width = True)
 
-    c2.write(f'''
-         ##### <div style="text-align: center">Times que venceram de acordo com kills e gold<span style="color:blue">
+    c1.write(f'''
+         ##### <div style="text-align: center">Total de dragões por time<span style="color:blue">
          ''', unsafe_allow_html=True)
 
-    line_chart = dfteams[['teamname', 'teamkills', 'totalgold', 'result']].query('teamname in ["INTZ", "KaBuM! e-Sports", "Flamengo Esports", "paiN Gaming", "RED Canids"]')
+    fig_dragons = px.bar(dfteams, x = 'teamname', y = 'dragons')
 
-    fig_line = px.scatter(line_chart, x = 'totalgold', y = 'teamkills', color = 'result', hover_data = ['teamname'])
+    c1.plotly_chart(fig_dragons)
+    
 
-    c2.plotly_chart(fig_line, use_container_width = True)
+    c2.write(f'''
+         ##### <div style="text-align: center">Vitórias com relação a kills e gold<span style="color:blue">
+         ''', unsafe_allow_html=True)
+
+    scatter_chart = dfteams[['teamname', 'teamkills', 'totalgold', 'result']].query('teamname in ["INTZ", "KaBuM! e-Sports", "Flamengo Esports", "paiN Gaming", "RED Canids"]')
+
+    fig_scatter = px.scatter(scatter_chart, x = 'totalgold', y = 'teamkills', color = 'result', hover_data = ['teamname'])
+
+    c2.plotly_chart(fig_scatter, use_container_width = True)
+
+    c2.write(f'''
+         ##### <div style="text-align: center">Total de barões por time<span style="color:blue">
+         ''', unsafe_allow_html=True)
+
+
+    fig_barons = px.bar(dfteams, x = 'teamname', y = 'barons')
+
+    c2.plotly_chart(fig_barons)
+
+
+
 
     st.dataframe(dfteams)
 #	fig = px.scatter(
@@ -294,5 +317,5 @@ with tab3:
     csv = convert_df(player_selected)
 
 
-    st.download_button("Press to Download", csv, "cblol_detalhe.csv", "text/csv", key='download-csv')
+    st.download_button("Download", csv, "cblol_detalhe.csv", "text/csv", key='download-csv')
 
